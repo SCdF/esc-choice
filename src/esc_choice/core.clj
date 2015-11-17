@@ -3,9 +3,7 @@
   (:import [org.joda.time LocalDateTime LocalTime]))
 
 (defn time-contained?
-  "Is the instant contained in the defined range?
-  NB: intentionally not dealing with the time begin the exact same as start
-  or end to see if we can use clojure-check (or whatever) correctly!"
+  "Is the instant contained in the defined range?"
   [^LocalDateTime instant [^LocalTime start-time ^LocalTime end-time]]
   (let [instant-time (.toLocalTime instant)]
     (or (= instant-time start-time)
