@@ -17,3 +17,5 @@
   (testing "time-contained? contains boundaries"
     (is      (time-contained? (dt 11 12 13) [(t 11 12 13) (t 12)]))
     (is      (time-contained? (dt 11 12 13) [(t 10) (t 11 12 13)]))))
+
+;; TODO work out how to do a core.check test on time-contained? to catch edge-cases
