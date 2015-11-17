@@ -8,13 +8,12 @@
   or end to see if we can use clojure-check (or whatever) correctly!"
   [^LocalDateTime instant [^LocalTime start-time ^LocalTime end-time]]
   (let [instant-time (.toLocalTime instant)]
-    (or
-      (= instant-time start-time)
-      (= instant-time end-time)
-      (if (t/before? start-time end-time)
+    (or (= instant-time start-time)
+        (= instant-time end-time)
+        (if (t/before? start-time end-time)
             (and (t/before? start-time instant-time) (t/after? end-time instant-time))
             (or (and (t/before? end-time instant-time) (t/before? start-time instant-time))
-                (t/after? start-time instant-time))))))
+                (and (t/after? end-time instant-time) (t/after? start-time instant-time)))))))
 
 ; (defn choice-algo
 ;   [people current-time]
