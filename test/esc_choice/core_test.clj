@@ -51,8 +51,13 @@
     (is (= [test-person-UK] (available [:normal] (dt "UTC" 10) test-people)))
     (is (= [test-person-NZ] (available [:normal] (dt "UTC" 3) test-people)))
     (is (= test-people (available [:normal] (dt "UTC" 20) test-people))))
-  (testing "available cares about priorities passed")
+  (testing "available cares about priorities passed"
     (is (= [test-person-NZ] (available [:sleeping] (dt "UTC" 10) test-people)))
     (is (= [test-person-UK] (available [:sleeping] (dt "UTC" 3) test-people)))
     (is (= [] (available [:sleeping] (dt "UTC" 8 30) test-people))))
+  (testing "available returns people in priorities order"
+    (is (= [test-person-UK
+            test-person-NZ] (available [:normal :sleeping]
+                                       (dt "UTC" 10)
+                                       test-people)))))
 ;; TODO work out how to do a core.check test on localtime-contained? to catch edge-cases

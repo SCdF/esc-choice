@@ -18,18 +18,22 @@
                             (.withZone user-tz)
                             .toLocalTime)
                         time-range))
-;; TODO: [instant people] or [people instant]?
+
+(defn- available-in-priority
+  [priority instant people]
+  (filter (fn [person]
+            (some
+              #(contained? instant (rest %) (:tz person))
+              (filter #(= priority (first %)) (:availability person))))
+  people))
+
+;; TODO: [priorites instant people] or [priorities people instant] or?
 (defn available
   "A lazy list of available people. Returns all people available in the first
   priority given, and then in the next and so on. People may appear multiple
   times, once for each priority"
   [priorities instant people]
-  (let [priority (first priorities)]
-    (filter (fn [person]
-              (some
-                #(contained? instant (rest %) (:tz person))
-                (filter #(= priority (first %)) (:availability person))))
-      people)))
+  (mapcat #(available-in-priority % instant people) priorities))
 
 ; (defn choice-algo
 ;   [people current-time]
