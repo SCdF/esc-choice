@@ -12,13 +12,26 @@
           (or (and (t/before? end-time instant-time) (t/before? start-time instant-time))
               (and (t/after? end-time instant-time) (t/after? start-time instant-time))))))
 
-(defn time-contained?
+(defn contained?
   [^DateTime instant time-range ^DateTimeZone user-tz]
   (localtime-contained? (-> instant
                             (.withZone user-tz)
                             .toLocalTime)
                         time-range))
 
+(def example-person {
+  :tz "NZ"
+  :availability [
+    ;; TODO add priority at the front
+    [(t/local-time 9) (t/local-time 12)]
+    [(t/local-time 13) (t/local-time 18)]]})
+
+;; TODO: [instant people] or [people instant]?
+(defn available [instant people]
+  (map (fn [person]
+          (when (filter contained? (:availability person))
+            person))
+    people))
 
 ; (defn choice-algo
 ;   [people current-time]
