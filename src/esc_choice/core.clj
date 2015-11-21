@@ -28,6 +28,7 @@
   people))
 
 ;; TODO: [priorites instant people] or [priorities people instant] or?
+;; TODO: is this actually lazy? test
 (defn available
   "A lazy list of available people. Returns all people available in the first
   priority given, and then in the next and so on. People may appear multiple
