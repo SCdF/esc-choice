@@ -33,20 +33,26 @@
     (is      (contained? (dt "UTC" 10 30) [(lt 22) (lt 0)] (tz "NZ")))))
 
 (def test-person-NZ {
-  :tz "NZ"
+  :tz (tz "NZ")
   :availability [
-    [(lt 9) (lt 12)]
-    [(lt 13) (lt 18)]]})
+    [:normal (lt 9) (lt 12)]
+    [:normal (lt 13) (lt 18)]
+    [:sleeping (lt 22) (lt 7)]]})
 (def test-person-UK {
-  :tz "Europe/London"
+  :tz (tz "Europe/London")
   :availability [
-    [(lt 9) (lt 12)]
-    [(lt 13) (lt 22)]]})
+    [:normal (lt 9) (lt 12)]
+    [:normal (lt 13) (lt 22)]
+    [:sleeping (lt 23) (lt 8)]]})
 (def test-people [test-person-NZ test-person-UK])
 
 (deftest available-test
   (testing "available returns a [lazy] list of all available people"
-    (is [test-person-UK] (available (dt "UTC" 10) test-people))
-    (is [test-person-NZ] (available (dt "UTC" 3) test-people))
-    (is test-people (available (dt "UTC" 20) test-people))))
+    (is (= [test-person-UK] (available [:normal] (dt "UTC" 10) test-people)))
+    (is (= [test-person-NZ] (available [:normal] (dt "UTC" 3) test-people)))
+    (is (= test-people (available [:normal] (dt "UTC" 20) test-people))))
+  (testing "available cares about priorities passed")
+    (is (= [test-person-NZ] (available [:sleeping] (dt "UTC" 10) test-people)))
+    (is (= [test-person-UK] (available [:sleeping] (dt "UTC" 3) test-people)))
+    (is (= [] (available [:sleeping] (dt "UTC" 8 30) test-people))))
 ;; TODO work out how to do a core.check test on localtime-contained? to catch edge-cases

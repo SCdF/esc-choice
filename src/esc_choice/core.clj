@@ -18,20 +18,18 @@
                             (.withZone user-tz)
                             .toLocalTime)
                         time-range))
-
-(def example-person {
-  :tz "NZ"
-  :availability [
-    ;; TODO add priority at the front
-    [(t/local-time 9) (t/local-time 12)]
-    [(t/local-time 13) (t/local-time 18)]]})
-
 ;; TODO: [instant people] or [people instant]?
-(defn available [instant people]
-  (map (fn [person]
-          (when (filter contained? (:availability person))
-            person))
-    people))
+(defn available
+  "A lazy list of available people. Returns all people available in the first
+  priority given, and then in the next and so on. People may appear multiple
+  times, once for each priority"
+  [priorities instant people]
+  (let [priority (first priorities)]
+    (filter (fn [person]
+              (some
+                #(contained? instant (rest %) (:tz person))
+                (filter #(= priority (first %)) (:availability person))))
+      people)))
 
 ; (defn choice-algo
 ;   [people current-time]
