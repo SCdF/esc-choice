@@ -24,8 +24,13 @@
   (filter (fn [person]
             (some
               #(contained? instant (rest %) (:tz person))
-              (filter #(= priority (first %)) (:availability person))))
+              (filter #(priority (first %)) (:availability person))))
   people))
+
+(defn priorities->fn
+  "Converts priority list into functions. If you don't pass a keyword, I sure
+   hope it's a function!"
+  [priorites] (map (fn [p] (if (keyword? p) (partial = p) p)) priorites))
 
 ;; TODO: [priorites instant people] or [priorities people instant] or?
 ;; TODO: is this actually lazy? test
@@ -34,7 +39,7 @@
   priority given, and then in the next and so on. People may appear multiple
   times, once for each priority"
   [priorities instant people]
-  (mapcat #(available-in-priority % instant people) priorities))
+  (mapcat #(available-in-priority % instant people) (priorities->fn priorities)))
 
 ; (defn choice-algo
 ;   [people current-time]

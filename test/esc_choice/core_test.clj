@@ -13,6 +13,7 @@
 (defn lt [& params] (apply t/local-time params))
 
 ;; Tests
+;; TODO work out how to do a core.check test on localtime-contained? to catch edge-cases
 (deftest localtime-contained-test
   (testing "localtime-contained? works generally"
     (is      (localtime-contained? (lt 11) [(lt 10) (lt 12 30)]))
@@ -35,29 +36,32 @@
 (def test-person-NZ {
   :tz (tz "NZ")
   :availability [
-    [:normal (lt 9) (lt 12)]
-    [:normal (lt 13) (lt 18)]
+    [:working (lt 9) (lt 12)]
+    [:working (lt 13) (lt 18)]
     [:sleeping (lt 22) (lt 7)]]})
 (def test-person-UK {
   :tz (tz "Europe/London")
   :availability [
-    [:normal (lt 9) (lt 12)]
-    [:normal (lt 13) (lt 22)]
+    [:working (lt 9) (lt 12)]
+    [:working (lt 13) (lt 22)]
     [:sleeping (lt 23) (lt 8)]]})
 (def test-people [test-person-NZ test-person-UK])
 
 (deftest available-test
   (testing "available returns a [lazy] list of all available people"
-    (is (= [test-person-UK] (available [:normal] (dt "UTC" 10) test-people)))
-    (is (= [test-person-NZ] (available [:normal] (dt "UTC" 3) test-people)))
-    (is (= test-people (available [:normal] (dt "UTC" 20) test-people))))
+    (is (= [test-person-UK] (available [:working] (dt "UTC" 10) test-people)))
+    (is (= [test-person-NZ] (available [:working] (dt "UTC" 3) test-people)))
+    (is (= test-people (available [:working] (dt "UTC" 20) test-people))))
   (testing "available cares about priorities passed"
     (is (= [test-person-NZ] (available [:sleeping] (dt "UTC" 10) test-people)))
     (is (= [test-person-UK] (available [:sleeping] (dt "UTC" 3) test-people)))
     (is (= [] (available [:sleeping] (dt "UTC" 8 30) test-people))))
   (testing "available returns people in priorities order"
     (is (= [test-person-UK
-            test-person-NZ] (available [:normal :sleeping]
+            test-person-NZ] (available [:working :sleeping]
                                        (dt "UTC" 10)
-                                       test-people)))))
-;; TODO work out how to do a core.check test on localtime-contained? to catch edge-cases
+                                       test-people))))
+  (testing "available can return everyone via identity"
+    (is (= test-people (available [identity] (dt "UTC" 10) test-people)))))
+
+
