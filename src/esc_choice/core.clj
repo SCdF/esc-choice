@@ -39,7 +39,7 @@
   priority given, and then in the next and so on. People may appear multiple
   times, once for each priority"
   [priorities instant people]
-  (mapcat #(available-in-priority % instant people) (priorities->fn priorities)))
+  (mapcat #(available-in-priority % instant (shuffle people)) (priorities->fn priorities)))
 
 ; (defn choice-algo
 ;   [people current-time]

@@ -51,7 +51,7 @@
   (testing "available returns a [lazy] list of all available people"
     (is (= [test-person-UK] (available [:working] (dt "UTC" 10) test-people)))
     (is (= [test-person-NZ] (available [:working] (dt "UTC" 3) test-people)))
-    (is (= test-people (available [:working] (dt "UTC" 20) test-people))))
+    (is (= (into #{} test-people) (into #{} (available [:working] (dt "UTC" 20) test-people)))))
   (testing "available cares about priorities passed"
     (is (= [test-person-NZ] (available [:sleeping] (dt "UTC" 10) test-people)))
     (is (= [test-person-UK] (available [:sleeping] (dt "UTC" 3) test-people)))
@@ -62,6 +62,6 @@
                                        (dt "UTC" 10)
                                        test-people))))
   (testing "available can return everyone via identity"
-    (is (= test-people (available [identity] (dt "UTC" 10) test-people)))))
+    (is (= (into #{} test-people) (into #{} (available [identity] (dt "UTC" 10) test-people))))))
 
 
